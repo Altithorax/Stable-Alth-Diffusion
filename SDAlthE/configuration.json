@@ -1,0 +1,29 @@
+{
+    "avaliable_styles": [
+        "(Ligth) COSMO",
+        "(Ligth) FLATLY",
+        "(Ligth) JOURNAL",
+        "(Ligth) LITERA",
+        "(Ligth) LUMEN",
+        "(Ligth) MINTY",
+        "(Ligth) PULSE",
+        "(Ligth) SANDSTONE",
+        "(Ligth) UNITED",
+        "(Ligth) YETI",
+        "(Ligth) MORPH",
+        "(Ligth) SIMPLEX",
+        "(Ligth) CERCULEAN",
+        "(Dark) SOLAR",
+        "(Dark) SUPERHERO",
+        "(Dark) DARKLY",
+        "(Dark) CYBORG",
+        "(Dark) VAPOR"
+    ],
+    "avaliable_resolutions": [
+        "1280x720",
+        "1920x1080",
+        "3840x2160"
+    ],
+    "style": "(Dark) CYBORG",
+    "language": "pt"
+}
