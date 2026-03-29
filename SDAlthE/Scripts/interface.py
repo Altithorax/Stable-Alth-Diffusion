@@ -11,6 +11,7 @@ sys.path.append(str(root))
 
 from Scripts.ui_def import *
 from Scripts.core import configuration, Image_Generation
+from Scripts.get_info import *
 
 # --------------------------------------------------------------
 
@@ -135,7 +136,7 @@ class UI:
         frame.rowconfigure(4, weight=1, minsize=20)
         frame.rowconfigure(5, weight=1, minsize=30)
         frame.columnconfigure(100, weight=0, minsize=20)
-        
+
         positive_label = Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
         positive_label.grid(row=1, column=1, sticky="nw")
         positive_prompt = ttk.Text(frame, width=100, height=6)
@@ -267,7 +268,7 @@ class UI:
             try:
                 generated = Image_Generation.generate_image(paramethers)
 
-                save_image(generated, paramethers.get("seed"))
+                save_image(generated, paramethers)
 
                 image_box.after(0, update_image, generated, image_box, button)
             except Exception as e:
@@ -315,3 +316,61 @@ class UI:
         image_label.image = img_tk
 
         return image_label
+
+    @classmethod
+    def image_get_info(cls, frame, image):
+
+        frame.rowconfigure(0, weight=0, minsize=20)
+        frame.rowconfigure(2, weight=0, minsize=20)
+        frame.rowconfigure(5, weight=0, minsize=20)
+        frame.rowconfigure(8, weight=0, minsize=20)
+        frame.rowconfigure(11, weight=0, minsize=20)
+        frame.rowconfigure(14, weight=0, minsize=20)
+        frame.rowconfigure(17, weight=0, minsize=20)
+        frame.rowconfigure(20, weight=0, minsize=20)
+        frame.rowconfigure(23, weight=0, minsize=20)
+        frame.rowconfigure(26, weight=0, minsize=20)
+        frame.columnconfigure(0, weight=0, minsize=20)
+
+        model_label = ttk.Label(frame, text=language(cls.select_lang, "model")+":")
+        model_label.grid(row=3, column=1, sticky="nw")
+        model_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        model_entry.grid(row=4, column=1)
+
+        positive_label = ttk.Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
+        positive_label.grid(row=6, column=1, sticky="nw")
+        positive_prompt = ttk.Text(frame, width=100, height=6, state="disabled",)
+        positive_prompt.grid(row=7, column=1, sticky="nw")
+
+        negative_label = ttk.Label(frame, text=language(cls.select_lang, "negative_prompt_label")+":")
+        negative_label.grid(row=9, column=1, sticky="nw")
+        negative_prompt = ttk.Text(frame, width=100, height=6, state="disabled")
+        negative_prompt.grid(row=10, column=1, sticky="nw")
+
+        width_height_label = ttk.Label(frame, text=language(cls.select_lang, "width_height"))
+        width_height_label.grid(row=12, column=1, sticky="nw")
+        width_height_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        width_height_entry.grid(row=13, column=1)
+
+        seed_label = ttk.Label(frame, text=language(cls.select_lang, "seed")+":")
+        seed_label.grid(row=15, column=1, sticky="nw")
+        seed_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        seed_entry.grid(row=16, column=1)
+
+        steps_label = ttk.Label(frame, text=language(cls.select_lang, "sampling_steps")+":")
+        steps_label.grid(row=18, column=1, sticky="nw")
+        steps_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        steps_entry.grid(row=19, column=1)
+
+        cfg_label = ttk.Label(frame, text=language(cls.select_lang, "cfg_scale")+":")
+        cfg_label.grid(row=21, column=1, sticky="nw")
+        cfg_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        cfg_entry.grid(row=22, column=1)
+
+        sampling_scheduler_label = ttk.Label(frame, text=language(cls.select_lang, "sampling_scheduler")+":")
+        sampling_scheduler_label.grid(row=24, column=1, sticky="nw")
+        sampling_scheduler_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        sampling_scheduler_entry.grid(row=25, column=1)
+
+        image_select = ttk.Button(frame, text=language(cls.select_lang, "open_image"), bootstyle="success", command=lambda: open_and_get(model_entry, positive_prompt, negative_prompt, width_height_entry, seed_entry, steps_entry, cfg_entry, sampling_scheduler_entry, image))
+        image_select.grid(row=1, column=1)

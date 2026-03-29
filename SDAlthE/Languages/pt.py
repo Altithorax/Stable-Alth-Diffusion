@@ -28,5 +28,10 @@ translations = {
     "img2img": "Imagem / Imagem",
     "device": "Dispositivo",
     "working_progress": "Trabalho em Progresso! Risco de Travamento!",
-    "theme": "Tema"
+    "theme": "Tema",
+    "get_info": "Rever Informações",
+    "open_image": "Abrir Imagem",
+    "model": "Modelo",
+    "sampling_scheduler": "Metodo de Amostragem / Tipo de Agendamento",
+    "width_height": "Largura / Altura"
 }

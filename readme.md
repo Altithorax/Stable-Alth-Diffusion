@@ -8,6 +8,9 @@ Stable Diffusion with an interface inspired by the AUTOMATIC1111 UI.
 - Custom model configuration
 - Easy prompt editing
 - Organized structure for testing and experimentation
+- Automatic saving of generation parameters inside image metadata
+- Built-in parameter reader for loading settings from previously generated images
+- Makes it easier to reproduce past generations
 
 ## 🖼️ Examples
 
@@ -23,5 +26,5 @@ Stable Diffusion with an interface inspired by the AUTOMATIC1111 UI.
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/Altithorax/Stable-Alth-Difussion.git
+git clone https://github.com/Altithorax/Stable-Alth-Diffussion.git
 cd "Stable Alth Diffusion"

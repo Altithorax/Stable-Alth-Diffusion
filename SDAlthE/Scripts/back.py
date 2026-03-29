@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import random
 from datetime import datetime
+from PIL import Image, PngImagePlugin
 
 def root_dir():
     DIR = Path(__file__).resolve().parent.parent
@@ -69,15 +70,29 @@ def image_index(folder):
 
     return max(numbers) + 1 if numbers else 1
 
-def save_image(image, seed):
+def save_image(image: Image, paramethers):
     output_dir = root_dir() / "Outputs" / datetime.now().strftime("%Y-%m-%d")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     index = image_index(output_dir)
 
+    model = str(paramethers.get("model"))
+    positive = str(paramethers.get("positive"))
+    negative = str(paramethers.get("negative"))
+    width = str(paramethers.get("width"))
+    height = str(paramethers.get("height"))
+    seed = str(paramethers.get("seed"))
+    steps = str(paramethers.get("steps"))
+    cfg = str(paramethers.get("cfg"))
+    sampler = str(paramethers.get("sampler"))
+    scheduler = str(paramethers.get("scheduler"))
+
+    metadata = PngImagePlugin.PngInfo()
+    metadata.add_text("paramethers", f"{model}~{positive}~{negative}~{width}~{height}~{seed}~{steps}~{cfg}~{sampler}~{scheduler}")
+
     filename = f"{index:04d}_{seed}.png"
     file_path = output_dir / filename
 
-    image.save(file_path)
+    image.save(file_path, pnginfo=metadata)
 
     return file_path

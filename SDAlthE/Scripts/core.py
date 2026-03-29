@@ -10,16 +10,17 @@ configuration = json_load("configuration.json")
 
 class Image_Generation:
 
-    pipeline_initialized = False
+    actual_model = None
 
     @classmethod
     def generate_image(cls, info: dict):
         from compel import Compel
 
         from Scripts.pipeline_core import Stable_Diffusion_Core as SD
-        if not cls.pipeline_initialized:
+
+        if cls.actual_model != info.get("model"):
             SD.pipeline_init(info.get("model"))
-            cls.pipeline_initialized = True
+            cls.actual_model = info.get("model")
 
         SD.pipe.to(info.get("device"))
 
@@ -56,7 +57,5 @@ class Image_Generation:
             width=int(info.get("width")),
             height=int(info.get("height")),
         )
-
-        image.save
 
         return image

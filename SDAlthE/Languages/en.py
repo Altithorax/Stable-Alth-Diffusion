@@ -27,5 +27,10 @@ translations = {
     "generate": "Generate",
     "device": "Device",
     "working_progress": "Work in Progress! Crash Warning!",
-    "theme": "Theme"
+    "theme": "Theme",
+    "get_info": "Get Image Info",
+    "open_image": "Open Image",
+    "model": "Model",
+    "sampling_scheduler": "Sampling Method / Scheduler Type",
+    "width_height": "Width / Height"
 }
