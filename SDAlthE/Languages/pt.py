@@ -33,5 +33,6 @@ translations = {
     "open_image": "Abrir Imagem",
     "model": "Modelo",
     "sampling_scheduler": "Metodo de Amostragem / Tipo de Agendamento",
-    "width_height": "Largura / Altura"
+    "width_height": "Largura / Altura",
+    "denoising_strength": "Intensidade de Ruido"
 }

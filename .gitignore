@@ -7,6 +7,9 @@ venv/
 *.png
 *.cdr
 .env
+*.code-workspace
+
+Test*.py
 
 Plans/
 Trash/

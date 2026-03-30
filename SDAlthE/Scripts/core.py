@@ -6,21 +6,17 @@ parent, root = file.parent, file.parent.parent
 sys.path.append(str(root))
 from Scripts.back import *
 
-configuration = json_load("configuration.json")
-
 class Image_Generation:
 
-    actual_model = None
+    #actual_model = None
 
     @classmethod
-    def generate_image(cls, info: dict):
+    def generate_image(cls, info: dict, generation, image_base=None, strength=None):
         from compel import Compel
 
         from Scripts.pipeline_core import Stable_Diffusion_Core as SD
 
-        if cls.actual_model != info.get("model"):
-            SD.pipeline_init(info.get("model"))
-            cls.actual_model = info.get("model")
+        SD.pipeline_init(info.get("model"), generation)
 
         SD.pipe.to(info.get("device"))
 
@@ -34,10 +30,10 @@ class Image_Generation:
             text_encoder=SD.pipe.text_encoder
         )
 
-        positive_prompts = compel(info.get("positive"))
-        negative_prompts = compel(info.get("negative"))
+        positive_embeds = compel(info.get("positive"))
+        negative_embeds = compel(info.get("negative"))
 
-        positive_embeds, negative_embeds = SD.pad_to_match(positive_prompts, negative_prompts)
+        #positive_embeds, negative_embeds = SD.pad_to_match(positive_prompts, negative_prompts)
 
 
         if info.get("scheduler") == "Karras":
@@ -47,15 +43,31 @@ class Image_Generation:
 
         SD.sampler_define(SD.pipe, info.get("sampler"), use_karras)
 
-        image = SD.image_generate(
-            pipe=SD.pipe,
-            pos_embeds=positive_embeds,
-            neg_embeds=negative_embeds,
-            generator=generator,
-            steps=int(info.get("steps")),
-            cfg=int(info.get("cfg")),
-            width=int(info.get("width")),
-            height=int(info.get("height")),
-        )
+        if generation == "txt2img":
+            image = SD.image_generate(
+                pipe=SD.pipe,
+                pos_embeds=positive_embeds,
+                neg_embeds=negative_embeds,
+                generator=generator,
+                steps=int(info.get("steps")),
+                cfg=int(info.get("cfg")),
+                width=int(info.get("width")),
+                height=int(info.get("height")),
+            )
+        elif generation == "img2img":
+            rgb_image = Image.open(image_base.get()).convert("RGB")
+
+            image = SD.image_generate_by_image(
+                pipe=SD.pipe,
+                pos_embeds=positive_embeds,
+                neg_embeds=negative_embeds,
+                generator=generator,
+                steps=int(info.get("steps")),
+                cfg=int(info.get("cfg")),
+                width=int(info.get("width")),
+                height=int(info.get("height")),
+                image_base=rgb_image,
+                strength=strength
+            )
 
         return image

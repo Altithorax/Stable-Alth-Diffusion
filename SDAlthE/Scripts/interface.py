@@ -10,7 +10,7 @@ parent, root = file.parent, file.parent.parent
 sys.path.append(str(root))
 
 from Scripts.ui_def import *
-from Scripts.core import configuration, Image_Generation
+from Scripts.core import Image_Generation
 from Scripts.get_info import *
 
 # --------------------------------------------------------------
@@ -79,7 +79,7 @@ class UI:
         return frame
     @classmethod
     def model_combobox(cls, frame: ttk.Frame) -> ttk.Combobox:
-        information_label = Label(frame, text=language(cls.select_lang, "checkpoint_info")+":", width=60)
+        information_label = ttk.Label(frame, text=language(cls.select_lang, "checkpoint_info")+":", width=60)
         information_label.grid(row=1, column=1, sticky="nw")
         model_list = list(list_model())
         model_combobox = ttk.Combobox(frame, values=model_list, width=60, state="readonly", bootstyle="light")
@@ -117,8 +117,8 @@ class UI:
         notebook_frame.columnconfigure(0, weight=1)
         notebook_frame.columnconfigure(1, weight=1)
 
-        image_frame = Frame(notebook_frame)
-        prompt_frame = Frame(notebook_frame)
+        image_frame = ttk.Frame(notebook_frame)
+        prompt_frame = ttk.Frame(notebook_frame)
         prompt_frame.grid(row=0, column=0, sticky="nw")
         image_frame.grid(row=0, column=1)
 
@@ -137,12 +137,12 @@ class UI:
         frame.rowconfigure(5, weight=1, minsize=30)
         frame.columnconfigure(100, weight=0, minsize=20)
 
-        positive_label = Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
+        positive_label = ttk.Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
         positive_label.grid(row=1, column=1, sticky="nw")
         positive_prompt = ttk.Text(frame, width=100, height=6)
         positive_prompt.grid(row=2, column=1, sticky="nw")
         
-        negative_label = Label(frame, text=language(cls.select_lang, "negative_prompt_label")+":")
+        negative_label = ttk.Label(frame, text=language(cls.select_lang, "negative_prompt_label")+":")
         negative_label.grid(row=4, column=1, sticky="nw")
         negative_prompt = ttk.Text(frame, width=100, height=6)
         negative_prompt.grid(row=5, column=1, sticky="nw")
@@ -150,9 +150,9 @@ class UI:
         return positive_prompt, negative_prompt
     
     @classmethod
-    def image_parameters_config(cls, frame: ttk.Frame, window: Tk, label: ttk.Label, model, positive, negative) -> dict:
-        gen_config = Frame(frame)
-        gen_config.grid(row=6, column=1)
+    def image_parameters_config(cls, frame: ttk.Frame, window: Tk, label: ttk.Label, model, positive, negative, generation, base_image=None) -> dict:
+        gen_config = ttk.Frame(frame)
+        gen_config.grid(row=10, column=1)
 
         gen_config.rowconfigure(0, weight=0, minsize=40)
         gen_config.rowconfigure(1, weight=1)
@@ -167,7 +167,7 @@ class UI:
         gen_config.columnconfigure(2, weight=1)
         gen_config.columnconfigure(3, weight=0, minsize=20)
 
-        sampling_label = Label(gen_config, text=language(cls.select_lang, "sampling_method")+":")
+        sampling_label = ttk.Label(gen_config, text=language(cls.select_lang, "sampling_method")+":")
         sampling_label.grid(row=1, column=0, sticky="n")
 
         sampling_list = ["DDIM", "DPM++ 2M", "DPM++ SDE", "Euler", "Euler A", "LMS", "Heun", "UniPC"]
@@ -175,7 +175,7 @@ class UI:
         sampling_method.grid(row=2, column=0, sticky="n")
         sampling_method.current(0)
 
-        schedule_type_label = Label(gen_config, text=language(cls.select_lang, "schedule_type")+":")
+        schedule_type_label = ttk.Label(gen_config, text=language(cls.select_lang, "schedule_type")+":")
         schedule_type_label.grid(row=1, column=2, sticky="n")
 
         schedule_type_list = ["Automatic", "Karras"]
@@ -192,10 +192,10 @@ class UI:
         width_value = ttk.IntVar(value=512)
         height_value = ttk.IntVar(value=512)
 
-        width_label = Label(gen_config, text=language(cls.select_lang, "width")+":")
+        width_label = ttk.Label(gen_config, text=language(cls.select_lang, "width")+":")
         width_label.grid(row=4, column=0, sticky="nw")
 
-        height_label = Label(gen_config, text=language(cls.select_lang, "height")+":")
+        height_label = ttk.Label(gen_config, text=language(cls.select_lang, "height")+":")
         height_label.grid(row=4, column=2, sticky="nw")
 
         image_width = ttk.Spinbox(gen_config, from_=64, to=2048, increment=8, textvariable=width_value)
@@ -215,7 +215,7 @@ class UI:
 
         steps_value = ttk.IntVar(value=20)
 
-        steps_label = Label(gen_config, text=language(cls.select_lang, "sampling_steps")+":")
+        steps_label = ttk.Label(gen_config, text=language(cls.select_lang, "sampling_steps")+":")
         steps_label.grid(row=7, column=0, sticky="nw")
 
         steps_box = ttk.Spinbox(gen_config, from_=1, to=150, increment=1, textvariable=steps_value)
@@ -231,7 +231,7 @@ class UI:
 
         cfg_value = ttk.DoubleVar(value=7.0)
 
-        cfg_text = Label(gen_config, text=language(cls.select_lang, "cfg_scale")+":")
+        cfg_text = ttk.Label(gen_config, text=language(cls.select_lang, "cfg_scale")+":")
         cfg_text.grid(row=7, column=2, sticky="nw")
 
         cfg_box = ttk.Spinbox(gen_config, from_=1, to=30, increment=0.5, textvariable=cfg_value)
@@ -244,7 +244,7 @@ class UI:
 
         seed_value = StringVar()
 
-        seed_label = Label(gen_config, text=language(cls.select_lang, "seed")+":")
+        seed_label = ttk.Label(gen_config, text=language(cls.select_lang, "seed")+":")
         seed_label.grid(row=10, column=0, sticky="nw")
 
         entry_seed = ttk.Entry(gen_config, validate="key", validatecommand=(vcmd, "%P"), textvariable=seed_value, width=47)
@@ -258,6 +258,25 @@ class UI:
         random_seed_button = ttk.Button(gen_config, text=language(cls.select_lang, "random"), command=lambda: random_seed(seed_value))
         random_seed_button.grid(row=11, column=2, sticky="nw")
 
+        if generation == "img2img":
+            def strength_move(v):
+                v = float(v)
+                v = round(v, 2)
+                strength_value.set(v)
+
+            strength_value = ttk.DoubleVar(value=0.5)
+
+            strength_text = ttk.Label(gen_config, text=language(cls.select_lang, "denoising_strength")+":")
+            strength_text.grid(row=13, column=0, sticky="nw")
+
+            strength_box = ttk.Spinbox(gen_config, from_=0, to=1, increment=0.01, textvariable=strength_value)
+            strength_box.grid(row=13, column=0, sticky="ne")
+
+            strength = ttk.Scale(gen_config, from_=0, to=1, orient="horizontal", variable=strength_value, length=300, command=strength_move)
+            strength.grid(row=14, column=0)
+            
+            gen_config.rowconfigure(15, weight=0, minsize=20)
+
         def update_image(image, image_box: Label, button: ttk.Button):
             generated = ImageTk.PhotoImage(image)
             image_box.config(image=generated)
@@ -266,9 +285,9 @@ class UI:
 
         def worker(paramethers, image_box, button):
             try:
-                generated = Image_Generation.generate_image(paramethers)
+                generated = Image_Generation.generate_image(paramethers, generation, base_image, strength_value.get())
 
-                save_image(generated, paramethers)
+                save_image(generated, paramethers, generation)
 
                 image_box.after(0, update_image, generated, image_box, button)
             except Exception as e:
@@ -276,7 +295,7 @@ class UI:
                 button.config(state="normal")
 
 
-        def image_generation_button(image_box: Label, button: ttk.Button):
+        def image_generation_button(image_box: ttk.Label, button: ttk.Button):
             button.config(state="disabled")
 
             if seed_value.get() == "":
@@ -301,9 +320,8 @@ class UI:
             )
             thread.start()
 
-
         gen_button = ttk.Button(gen_config, text=language(cls.select_lang, "generate"), command=lambda: image_generation_button(label, gen_button))
-        gen_button.grid(row=13, column=0)
+        gen_button.grid(row=16, column=0)
 
     @classmethod
     def image_frame_show(cls, frame: ttk.Frame):
@@ -311,7 +329,7 @@ class UI:
         frame_image = Image.open((frame_image_dir))
         frame_image = frame_image.resize((500, 500))
         img_tk = ImageTk.PhotoImage(frame_image)
-        image_label = Label(frame, image=img_tk)
+        image_label = ttk.Label(frame, image=img_tk)
         image_label.pack()
         image_label.image = img_tk
 
@@ -374,3 +392,98 @@ class UI:
 
         image_select = ttk.Button(frame, text=language(cls.select_lang, "open_image"), bootstyle="success", command=lambda: open_and_get(model_entry, positive_prompt, negative_prompt, width_height_entry, seed_entry, steps_entry, cfg_entry, sampling_scheduler_entry, image))
         image_select.grid(row=1, column=1)
+
+    @classmethod
+    def scrollable_frame(cls, frame):
+
+        canvas = ttk.Canvas(frame, highlightthickness=0)
+        scroll = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+
+        scroll_frame = ttk.Frame(canvas)
+
+        window_id = canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scroll.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scroll.pack(side="right", fill="y")
+
+        def update_scroll_region(event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        def resize_frame(event):
+            canvas.itemconfigure(window_id, width=event.width)
+
+        scroll_frame.bind("<Configure>", update_scroll_region)
+        canvas.bind("<Configure>", resize_frame)
+
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        def _bind_mousewheel(event):
+            canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        def _unbind_mousewheel(event):
+            canvas.unbind_all("<MouseWheel>")
+
+        canvas.bind("<Enter>", _bind_mousewheel)
+        canvas.bind("<Leave>", _unbind_mousewheel)
+
+        scroll_frame.bind("<Enter>", _bind_mousewheel)
+        scroll_frame.bind("<Leave>", _unbind_mousewheel)
+
+        return scroll_frame
+    
+    @classmethod
+    def prompt_img2img(cls, frame: ttk.Frame) -> tuple[ttk.Text, ttk.Text]:
+
+        frame.rowconfigure(0, weight=0, minsize=20)
+        frame.columnconfigure(0, weight=0, minsize=20)
+        frame.columnconfigure(1, weight=1, minsize=20)
+        frame.rowconfigure(1, weight=1, minsize=20)
+        frame.rowconfigure(2, weight=1, minsize=30)
+        frame.rowconfigure(3, weight=0, minsize=20)
+        frame.rowconfigure(4, weight=1, minsize=20)
+        frame.rowconfigure(5, weight=1, minsize=30)
+        frame.rowconfigure(6, weight=0, minsize=20)
+        frame.rowconfigure(7, weight=1, minsize=20)
+        frame.rowconfigure(8, weight=1, minsize=30)
+        frame.columnconfigure(100, weight=0, minsize=20)
+
+        frame_image_dir = assets_dir / "image frame.png"
+        frame_image = Image.open((frame_image_dir))
+        frame_image = frame_image.resize((500, 500))
+        img_tk = ImageTk.PhotoImage(frame_image)
+        image_label = ttk.Label(frame, image=img_tk)
+        image_label.grid(row=2, column=1)
+        image_label.image = img_tk
+
+        image_path = StringVar()
+
+        def get_file(var):
+            file_path = Path(filedialog.askopenfilename(
+                title="Selecione uma Imagem",
+                filetypes=(("Image", "*.png"), ("All", "*.*"))
+            ))
+            var.set(Path(file_path))
+
+            new_image = Image.open(var.get())
+            new_image_tk = ImageTk.PhotoImage(new_image)
+            image_label.config(image=new_image_tk)
+            image_label.image = new_image_tk
+
+
+        open_image_button = ttk.Button(frame, text=language(cls.select_lang, "open_image"), bootstyle="warning", command=lambda: get_file(image_path))
+        open_image_button.grid(row=1, column=1)
+
+        positive_label = ttk.Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
+        positive_label.grid(row=4, column=1, sticky="nw")
+        positive_prompt = ttk.Text(frame, width=100, height=6)
+        positive_prompt.grid(row=5, column=1, sticky="nw")
+        
+        negative_label = ttk.Label(frame, text=language(cls.select_lang, "negative_prompt_label")+":")
+        negative_label.grid(row=7, column=1, sticky="nw")
+        negative_prompt = ttk.Text(frame, width=100, height=6)
+        negative_prompt.grid(row=8, column=1, sticky="nw")
+
+        return positive_prompt, negative_prompt, image_path

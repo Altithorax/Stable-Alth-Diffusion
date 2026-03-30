@@ -32,6 +32,7 @@ def json_load(arch: Path):
     json_path = root_dir() / arch
     with open(json_path, "r", encoding="utf-8") as f:
         return json.load(f)
+configuration = json_load("configuration.json")
     
 def json_save(arch: Path, dictionary: dict):
     json_path = root_dir() / arch
@@ -70,8 +71,8 @@ def image_index(folder):
 
     return max(numbers) + 1 if numbers else 1
 
-def save_image(image: Image, paramethers):
-    output_dir = root_dir() / "Outputs" / datetime.now().strftime("%Y-%m-%d")
+def save_image(image: Image, paramethers, generation):
+    output_dir = root_dir() / "Outputs" / generation / datetime.now().strftime("%Y-%m-%d")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     index = image_index(output_dir)

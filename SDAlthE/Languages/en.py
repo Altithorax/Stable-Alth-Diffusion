@@ -32,5 +32,6 @@ translations = {
     "open_image": "Open Image",
     "model": "Model",
     "sampling_scheduler": "Sampling Method / Scheduler Type",
-    "width_height": "Width / Height"
+    "width_height": "Width / Height",
+    "denoising_strength": "Denoising Strength"
 }

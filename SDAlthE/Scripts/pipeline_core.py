@@ -1,6 +1,7 @@
 
 from diffusers import (
     StableDiffusionPipeline,
+    StableDiffusionImg2ImgPipeline,
     DPMSolverSDEScheduler,
     DPMSolverMultistepScheduler,
     EulerDiscreteScheduler,
@@ -15,26 +16,41 @@ import PIL
 
 class Stable_Diffusion_Core:
     pipe = None
+    current_generation = None
     current_model = None
 
     @classmethod
-    def pipeline_init(cls, model_path: str) -> StableDiffusionPipeline:
+    def pipeline_init(cls, model_path: str, generation) -> StableDiffusionPipeline:
         if cls.pipe is None or cls.current_model != model_path:
 
-            if cls.pipe is not None or cls.current_model != model_path:
-                del cls.pipe
-                torch.cuda.empty_cache()
+            if generation == "txt2img":
+                if cls.pipe is not None or cls.current_model != model_path:
+                    del cls.pipe
+                    torch.cuda.empty_cache()
 
-            cls.pipe = StableDiffusionPipeline.from_single_file(
-                model_path,
-                torch_dtype=torch.float16,
-                safety_checker=None
-            )
+                cls.pipe = StableDiffusionPipeline.from_single_file(
+                    model_path,
+                    torch_dtype=torch.float16,
+                    safety_checker=None
+                )
 
-            cls.current_model = model_path
+                cls.current_model = model_path
+
+            elif generation == "img2img":
+                if cls.pipe is not None or cls.current_model != model_path:
+                    del cls.pipe
+                    torch.cuda.empty_cache()
+
+                cls.pipe = StableDiffusionImg2ImgPipeline.from_single_file(
+                    model_path,
+                    torch_dtype=torch.float16,
+                    safety_checker=None
+                )
+
+                cls.current_model = model_path
 
         return cls.pipe
-    
+            
     @staticmethod
     def generator_seed(seed, device) -> torch.Tensor:
         
@@ -131,6 +147,33 @@ class Stable_Diffusion_Core:
         ).images[0]
 
         return image
+    
+    @staticmethod
+    def image_generate_by_image(pipe: StableDiffusionImg2ImgPipeline,
+                       pos_embeds: torch.Tensor,
+                       neg_embeds: torch.Tensor,
+                       generator: torch.Generator,
+                       steps: int,
+                       cfg: int,
+                       width: int,
+                       height: int,
+                       image_base,
+                       strength
+        ) -> PIL.Image.Image:
+        image = pipe(
+            prompt_embeds=pos_embeds,
+            negative_prompt_embeds=neg_embeds,
+            generator=generator,
+            guidance_scale=cfg,
+            width=width,
+            height=height,
+            num_inference_steps=steps,
+            image=image_base,
+            strength=strength
+        ).images[0]
+
+        return image
+
     
     @staticmethod
     def sampler_define(pipe, sampler, karras):

@@ -8,7 +8,6 @@ parent, root = file.parent, file.parent.parent
 sys.path.append(str(root))
 
 from Scripts.back import *
-from Scripts.core import configuration
 
 select_lang = load_language(configuration.get("language", "en"))
 
