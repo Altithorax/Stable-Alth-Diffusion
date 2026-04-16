@@ -8,15 +8,20 @@ venv/
 *.cdr
 .env
 *.code-workspace
+*.rar
 
 Test*.py
+
+!Assets/
+!Assets/*.png
+!icon.png
+!image frame.png
+!ex.png
+!ex2.png
+
+
 
 Plans/
 Trash/
 Outputs/
-
-!Assets/
-!Assets/*.png
-!Assets/*.jpg
-!ex.png
-!ex2.png
+Lora/

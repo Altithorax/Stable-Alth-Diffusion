@@ -33,5 +33,9 @@ translations = {
     "model": "Model",
     "sampling_scheduler": "Sampling Method / Scheduler Type",
     "width_height": "Width / Height",
-    "denoising_strength": "Denoising Strength"
+    "denoising_strength": "Denoising Strength",
+    "generation_type": "Generation Type",
+    "no_works": "No Works",
+    "generating": "Generating",
+    "completed": "Completed"
 }

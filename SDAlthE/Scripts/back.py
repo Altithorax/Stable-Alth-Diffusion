@@ -46,6 +46,13 @@ def list_model():
         for file in sorted(models_directory.glob("*.safetensors"))
     }
 
+def list_loras():
+    loras_directory = root_dir() / "Lora"
+    return {
+        file.stem: file
+        for file in sorted(loras_directory.glob("*.safetensors"))
+    }
+
 def validate_seed(value):
     if value == "":
         return True
@@ -71,7 +78,7 @@ def image_index(folder):
 
     return max(numbers) + 1 if numbers else 1
 
-def save_image(image: Image, paramethers, generation):
+def save_image(image: Image, paramethers, generation, strength):
     output_dir = root_dir() / "Outputs" / generation / datetime.now().strftime("%Y-%m-%d")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -89,8 +96,10 @@ def save_image(image: Image, paramethers, generation):
     scheduler = str(paramethers.get("scheduler"))
 
     metadata = PngImagePlugin.PngInfo()
-    metadata.add_text("paramethers", f"{model}~{positive}~{negative}~{width}~{height}~{seed}~{steps}~{cfg}~{sampler}~{scheduler}")
-
+    if generation == "img2img":
+        metadata.add_text("paramethers", f"{model}~{positive}~{negative}~{width}~{height}~{seed}~{steps}~{cfg}~{sampler}~{scheduler}~{generation}~{strength.get()}")
+    else:
+        metadata.add_text("paramethers", f"{model}~{positive}~{negative}~{width}~{height}~{seed}~{steps}~{cfg}~{sampler}~{scheduler}~{generation}")
     filename = f"{index:04d}_{seed}.png"
     file_path = output_dir / filename
 

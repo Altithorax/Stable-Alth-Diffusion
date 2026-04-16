@@ -36,7 +36,8 @@ UI.image_parameters_config(prompt_frame_i2i, window, image_i2i, model, positive_
 
 # Get Info:
 get_info = UI.notebook_frame(main_notebook, "get_info")
-info_image_frame, info_frame = UI.framebox_division(get_info)
+scroll_info = UI.scrollable_frame(get_info)
+info_image_frame, info_frame = UI.framebox_division(scroll_info)
 image_get = UI.image_frame_show(info_image_frame)
 UI.image_get_info(info_frame, image_get)
 window.mainloop()

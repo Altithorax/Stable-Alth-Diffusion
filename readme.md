@@ -11,6 +11,7 @@ Stable Diffusion with an interface inspired by the AUTOMATIC1111 UI.
 - Automatic saving of generation parameters inside image metadata
 - Built-in parameter reader for loading settings from previously generated images
 - Makes it easier to reproduce past generations
+- LoRa to make infinite styles
 
 ## 🖼️ Examples
 
@@ -26,5 +27,5 @@ Stable Diffusion with an interface inspired by the AUTOMATIC1111 UI.
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/Altithorax/Stable-Alth-Diffussion.git
+git clone https://github.com/Altithorax/Stable-Alth-Diffusion.git
 cd "Stable Alth Diffusion"

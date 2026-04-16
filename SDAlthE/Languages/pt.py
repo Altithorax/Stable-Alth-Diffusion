@@ -34,5 +34,9 @@ translations = {
     "model": "Modelo",
     "sampling_scheduler": "Metodo de Amostragem / Tipo de Agendamento",
     "width_height": "Largura / Altura",
-    "denoising_strength": "Intensidade de Ruido"
+    "denoising_strength": "Intensidade de Ruido",
+    "generation_type": "Tipo de Geração",
+    "no_works": "Sem Trabalhos",
+    "generating": "Gerando",
+    "completed": "Concluido"
 }

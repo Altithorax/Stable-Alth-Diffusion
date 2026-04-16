@@ -13,11 +13,14 @@ from diffusers import (
 )
 import torch
 import PIL
+import re
 
 class Stable_Diffusion_Core:
     pipe = None
     current_generation = None
     current_model = None
+
+    LORA_PATTERN = re.compile(r"<lora:([^:>]+):([0-9]*\.?[0-9]+)>")
 
     @classmethod
     def pipeline_init(cls, model_path: str, generation) -> StableDiffusionPipeline:
@@ -57,6 +60,19 @@ class Stable_Diffusion_Core:
         generator = torch.Generator(device).manual_seed(seed)
 
         return generator
+    
+    @classmethod
+    def loras_indentification(cls, prompt: str) -> tuple[str, str]:
+        def clean_format(text):
+            text = re.sub(r"\s*,\s*,+", ", ", prompt)
+            text = re.sub(r"\s{2,}", " ", prompt)
+            return text.strip(" ,")
+        
+        matches = cls.LORA_PATTERN.findall(prompt)
+        loras = [(names.strip(), float(weight)) for names, weight in matches]
+        clean_prompt = cls.LORA_PATTERN.sub("", prompt)
+        clean_prompt = clean_format(clean_prompt)
+        return clean_prompt, loras
     
     def encode_prompts(pipe: StableDiffusionPipeline, prompt: str) -> torch.Tensor:
 
@@ -134,7 +150,8 @@ class Stable_Diffusion_Core:
                        steps: int,
                        cfg: int,
                        width: int,
-                       height: int
+                       height: int,
+                       callback
         ) -> PIL.Image.Image:
         image = pipe(
             prompt_embeds=pos_embeds,
@@ -143,7 +160,8 @@ class Stable_Diffusion_Core:
             guidance_scale=cfg,
             width=width,
             height=height,
-            num_inference_steps=steps
+            num_inference_steps=steps,
+            callback_on_step_end=callback
         ).images[0]
 
         return image
@@ -158,6 +176,7 @@ class Stable_Diffusion_Core:
                        width: int,
                        height: int,
                        image_base,
+                       callback,
                        strength
         ) -> PIL.Image.Image:
         image = pipe(
@@ -169,7 +188,8 @@ class Stable_Diffusion_Core:
             height=height,
             num_inference_steps=steps,
             image=image_base,
-            strength=strength
+            strength=strength,
+            callback_on_step_end=callback
         ).images[0]
 
         return image

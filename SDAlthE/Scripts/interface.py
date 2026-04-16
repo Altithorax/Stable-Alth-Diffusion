@@ -34,7 +34,7 @@ class UI:
         cls.height = window.winfo_screenheight()
         cls.resolution = f"{cls.width}x{cls.height}"
 
-        icon = ttk.PhotoImage(file=assets_dir / "icone.png")
+        icon = ttk.PhotoImage(file=assets_dir / "icon.png")
         window.iconphoto(True, icon)
         window.title("Stable Alth Diffussion")
         window.geometry(cls.resolution)
@@ -65,16 +65,16 @@ class UI:
     @staticmethod
     def main_frame(window: Tk) -> ttk.Frame:
         frame = ttk.Frame(window)
-        frame.pack(fill="both")
+        frame.pack(fill="both", expand=True)
 
         frame.rowconfigure(0, weight=0, minsize=20)
         frame.rowconfigure(1, weight=0, minsize=20)
-        frame.rowconfigure(2, weight=1, minsize=30)
+        frame.rowconfigure(2, weight=0, minsize=30)
+        frame.rowconfigure(3, weight=0, minsize=20)
+        frame.rowconfigure(4, weight=1, minsize=20)
         frame.columnconfigure(0, weight=0 ,minsize=20)
         frame.columnconfigure(1, weight=1, minsize=20)
         frame.columnconfigure(2, weight=0, minsize=20)
-        frame.rowconfigure(3, weight=0, minsize=20)
-        frame.rowconfigure(4, weight=1, minsize=20)
 
         return frame
     @classmethod
@@ -128,13 +128,13 @@ class UI:
     def prompt_text(cls, frame: ttk.Frame) -> tuple[ttk.Text, ttk.Text]:
 
         frame.rowconfigure(0, weight=0, minsize=20)
-        frame.columnconfigure(0, weight=0, minsize=20)
-        frame.columnconfigure(1, weight=1, minsize=20)
         frame.rowconfigure(1, weight=1, minsize=20)
         frame.rowconfigure(2, weight=1, minsize=30)
         frame.rowconfigure(3, weight=0, minsize=20)
         frame.rowconfigure(4, weight=1, minsize=20)
         frame.rowconfigure(5, weight=1, minsize=30)
+        frame.columnconfigure(0, weight=0, minsize=20)
+        frame.columnconfigure(1, weight=1, minsize=20)
         frame.columnconfigure(100, weight=0, minsize=20)
 
         positive_label = ttk.Label(frame, text=language(cls.select_lang, "positive_prompt_label")+":")
@@ -258,13 +258,18 @@ class UI:
         random_seed_button = ttk.Button(gen_config, text=language(cls.select_lang, "random"), command=lambda: random_seed(seed_value))
         random_seed_button.grid(row=11, column=2, sticky="nw")
 
+        progress_label = ttk.Label(gen_config, text=language(cls.select_lang, "no_works"))
+        progress_label.grid(row=16, column=2, sticky="nw")
+        progress = ttk.Progressbar(gen_config, orient="horizontal", mode="determinate", length=300)
+        progress.grid(row=17, column=2)
+
+        strength_value = ttk.DoubleVar(value=0.5)
+
         if generation == "img2img":
             def strength_move(v):
                 v = float(v)
                 v = round(v, 2)
                 strength_value.set(v)
-
-            strength_value = ttk.DoubleVar(value=0.5)
 
             strength_text = ttk.Label(gen_config, text=language(cls.select_lang, "denoising_strength")+":")
             strength_text.grid(row=13, column=0, sticky="nw")
@@ -285,11 +290,16 @@ class UI:
 
         def worker(paramethers, image_box, button):
             try:
-                generated = Image_Generation.generate_image(paramethers, generation, base_image, strength_value.get())
+                progress_label.config(text=language(cls.select_lang, "generating")+"...", bootstyle="warning")
 
-                save_image(generated, paramethers, generation)
+                generated = Image_Generation.generate_image(paramethers, generation, progress, base_image, strength_value.get())
+
+                save_image(generated, paramethers, generation, strength_value)
 
                 image_box.after(0, update_image, generated, image_box, button)
+
+                progress_label.config(text=language(cls.select_lang, "completed"), bootstyle="success")
+                progress.config(bootstyle="success")
             except Exception as e:
                 print(e)
                 button.config(state="normal")
@@ -320,8 +330,8 @@ class UI:
             )
             thread.start()
 
-        gen_button = ttk.Button(gen_config, text=language(cls.select_lang, "generate"), command=lambda: image_generation_button(label, gen_button))
-        gen_button.grid(row=16, column=0)
+        gen_button = ttk.Button(gen_config, text=language(cls.select_lang, "generate"), command=lambda: image_generation_button(label, gen_button), bootstyle="success")
+        gen_button.grid(row=17, column=0)
 
     @classmethod
     def image_frame_show(cls, frame: ttk.Frame):
@@ -348,7 +358,10 @@ class UI:
         frame.rowconfigure(20, weight=0, minsize=20)
         frame.rowconfigure(23, weight=0, minsize=20)
         frame.rowconfigure(26, weight=0, minsize=20)
+        frame.rowconfigure(29, weight=0, minsize=20)
+        frame.rowconfigure(32, weight=0, minsize=20)
         frame.columnconfigure(0, weight=0, minsize=20)
+        frame.columnconfigure(2, weight=0, minsize=40)
 
         model_label = ttk.Label(frame, text=language(cls.select_lang, "model")+":")
         model_label.grid(row=3, column=1, sticky="nw")
@@ -390,41 +403,58 @@ class UI:
         sampling_scheduler_entry = ttk.Text(frame, state="disabled", width=100, height=1)
         sampling_scheduler_entry.grid(row=25, column=1)
 
-        image_select = ttk.Button(frame, text=language(cls.select_lang, "open_image"), bootstyle="success", command=lambda: open_and_get(model_entry, positive_prompt, negative_prompt, width_height_entry, seed_entry, steps_entry, cfg_entry, sampling_scheduler_entry, image))
+        generation_label = ttk.Label(frame, text=language(cls.select_lang, "generation_type")+":")
+        generation_label.grid(row=27, column=1, sticky="nw")
+        generation_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+        generation_entry.grid(row=28, column=1)
+
+        strength_label = ttk.Label(frame, text=language(cls.select_lang, "denoising_strength")+":")
+        strength_entry = ttk.Text(frame, state="disabled", width=100, height=1)
+
+        image_select = ttk.Button(frame, text=language(cls.select_lang, "open_image"), bootstyle="success", command=lambda: open_and_get(model_entry, positive_prompt, negative_prompt, width_height_entry, seed_entry, steps_entry, cfg_entry, sampling_scheduler_entry, generation_entry, strength_entry, strength_label, image))
         image_select.grid(row=1, column=1)
 
     @classmethod
     def scrollable_frame(cls, frame):
 
         canvas = ttk.Canvas(frame, highlightthickness=0)
-        scroll = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        scroll_vertical = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        scroll_horizontal = ttk.Scrollbar(frame, orient="horizontal", command=canvas.xview)
 
         scroll_frame = ttk.Frame(canvas)
 
         window_id = canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
 
-        canvas.configure(yscrollcommand=scroll.set)
+        canvas.configure(yscrollcommand=scroll_vertical.set)
+        canvas.configure(xscrollcommand=scroll_horizontal.set)
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scroll.pack(side="right", fill="y")
+        frame.rowconfigure(0, weight=1)
+        frame.rowconfigure(1, weight=0, minsize=10)
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(1, weight=0, minsize=10)
+
+        canvas.grid(row=0, column=0, sticky="nsew")
+        scroll_vertical.grid(row=0, column=1, sticky="ns")
+        scroll_horizontal.grid(row=1, column=0, sticky="we")
 
         def update_scroll_region(event=None):
             canvas.configure(scrollregion=canvas.bbox("all"))
 
-        def resize_frame(event):
-            canvas.itemconfigure(window_id, width=event.width)
-
         scroll_frame.bind("<Configure>", update_scroll_region)
-        canvas.bind("<Configure>", resize_frame)
 
         def _on_mousewheel(event):
             canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+        def _on_shift_mousewheel(event):
+            canvas.xview_scroll(int(-1 * (event.delta / 120)), "units")
+
         def _bind_mousewheel(event):
             canvas.bind_all("<MouseWheel>", _on_mousewheel)
+            canvas.bind_all("<Shift-MouseWheel>", _on_shift_mousewheel)
 
         def _unbind_mousewheel(event):
             canvas.unbind_all("<MouseWheel>")
+            canvas.unbind_all("<Shift-MouseWheel>")
 
         canvas.bind("<Enter>", _bind_mousewheel)
         canvas.bind("<Leave>", _unbind_mousewheel)
@@ -438,8 +468,6 @@ class UI:
     def prompt_img2img(cls, frame: ttk.Frame) -> tuple[ttk.Text, ttk.Text]:
 
         frame.rowconfigure(0, weight=0, minsize=20)
-        frame.columnconfigure(0, weight=0, minsize=20)
-        frame.columnconfigure(1, weight=1, minsize=20)
         frame.rowconfigure(1, weight=1, minsize=20)
         frame.rowconfigure(2, weight=1, minsize=30)
         frame.rowconfigure(3, weight=0, minsize=20)
@@ -448,6 +476,8 @@ class UI:
         frame.rowconfigure(6, weight=0, minsize=20)
         frame.rowconfigure(7, weight=1, minsize=20)
         frame.rowconfigure(8, weight=1, minsize=30)
+        frame.columnconfigure(0, weight=0, minsize=20)
+        frame.columnconfigure(1, weight=1, minsize=20)
         frame.columnconfigure(100, weight=0, minsize=20)
 
         frame_image_dir = assets_dir / "image frame.png"
